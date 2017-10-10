@@ -1,0 +1,27 @@
+#!/bin/bash
+
+function make_storage_dir {
+    if [ ! -d ~/.coingrab ]; then
+        mkdir ~/.coingrab
+    fi
+}
+
+function date_to_unix {
+    if [ "$(uname -s)" == "Darwin" ]; then
+        date -j -f "%d/%m/%Y" $1 "+%s"
+    else
+        date -d "$1 00:00:00" +"%s"
+    fi
+}
+
+function fetch_trade_history {
+    local start_date=$(date_to_unix $1)
+    local end_date=$(date_to_unix $2)
+    local url="https://poloniex.com/public?command=returnTradeHistory&currencyPair=BTC_NXT&start=$start_date&end=$end_date"
+    curl $url || exit 1
+}
+
+
+fetch_trade_history $1 $2
+
+make_storage_dir
